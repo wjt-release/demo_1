@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="极简在线二维码生成工具 - 粘贴即生成，无需注册登录">
+    <meta name="keywords" content="二维码,QR Code,二维码生成器,在线工具">
+    <title>QR Code Generator - 极简二维码生成器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <span class="title-icon">▣</span>
+                QR Generator
+            </h1>
+            <p class="subtitle">粘贴即生成 · 无需登录 · 即刻使用</p>
+        </header>
+
+        <main class="main">
+            <section class="input-section">
+                <label for="input-text" class="input-label">输入内容</label>
+                <textarea 
+                    id="input-text" 
+                    class="input-textarea"
+                    placeholder="粘贴你的网址或文本链接..."
+                    aria-label="输入要生成二维码的文本或链接"
+                    autofocus
+                ></textarea>
+                <p id="input-hint" class="input-hint">
+                    支持 HTTP/HTTPS 链接及任意文本内容
+                </p>
+            </section>
+
+            <section class="output-section" id="output-section">
+                <div class="qr-container" id="qr-container">
+                    <div class="qr-placeholder" id="qr-placeholder">
+                        <div class="placeholder-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <rect x="14" y="14" width="3" height="3"/>
+                                <rect x="18" y="14" width="3" height="3"/>
+                                <rect x="14" y="18" width="3" height="3"/>
+                                <rect x="18" y="18" width="3" height="3"/>
+                            </svg>
+                        </div>
+                        <p class="placeholder-text">输入内容后自动生成</p>
+                    </div>
+                    <div class="qr-canvas-wrapper" id="qr-canvas-wrapper"></div>
+                </div>
+                
+                <button 
+                    class="download-btn" 
+                    id="download-btn"
+                    aria-label="下载二维码图片"
+                    disabled
+                >
+                    <svg class="download-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>下载二维码</span>
+                </button>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p class="footer-text">
+                纯前端生成 · 数据不离开你的浏览器
+            </p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        window.QRCodeLib = window.QRCode;
+        if (!window.QRCodeLib) {
+            console.error('QRCode library failed to load from CDN');
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
