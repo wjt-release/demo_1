@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据看板</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">数据看板</h1>
+      <div class="dashboard-time">
+        <span id="currentTime"></span>
+      </div>
+    </header>
+
+    <section class="metrics-grid">
+      <div class="metric-card" data-delay="0">
+        <div class="metric-icon users-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">用户总数</span>
+          <span class="metric-value" id="usersValue">0</span>
+          <span class="metric-change positive" id="usersChange">+0%</span>
+        </div>
+        <div class="metric-decoration"></div>
+      </div>
+
+      <div class="metric-card" data-delay="100">
+        <div class="metric-icon conversion-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">转化率</span>
+          <span class="metric-value" id="conversionValue">0%</span>
+          <span class="metric-change positive" id="conversionChange">+0%</span>
+        </div>
+        <div class="metric-decoration"></div>
+      </div>
+
+      <div class="metric-card" data-delay="200">
+        <div class="metric-icon revenue-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">日均收入</span>
+          <span class="metric-value" id="revenueValue">¥0</span>
+          <span class="metric-change negative" id="revenueChange">-0%</span>
+        </div>
+        <div class="metric-decoration"></div>
+      </div>
+    </section>
+
+    <section class="charts-grid">
+      <div class="chart-card sales-chart" data-delay="300">
+        <div class="chart-header">
+          <h2 class="chart-title">销售趋势</h2>
+          <span class="chart-subtitle">近30天数据</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card region-chart" data-delay="400">
+        <div class="chart-header">
+          <h2 class="chart-title">地区分布</h2>
+          <span class="chart-subtitle">各省份占比</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="regionChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card heatmap-chart" data-delay="500">
+        <div class="chart-header">
+          <h2 class="chart-title">用户活跃度</h2>
+          <span class="chart-subtitle">日-小时分布热力图</span>
+        </div>
+        <div class="heatmap-container">
+          <canvas id="heatmapChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
