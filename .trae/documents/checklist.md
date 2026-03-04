@@ -1,0 +1,25 @@
+# Verification Checklist
+
+- [x] **Core Gameplay**
+    - [x] Player can move (Up, Down, Left, Right).
+    - [x] Player can shoot (Spacebar).
+    - [x] Enemies spawn and move.
+    - [x] Enemies shoot.
+- [x] **Map & Collision**
+    - [x] Brick walls are destructible.
+    - [x] Iron walls are indestructible.
+    - [x] Grass overlays tanks (visual only).
+    - [x] Tanks cannot move through walls or boundaries.
+    - [x] Bullets destroy enemies/player.
+- [x] **Game Flow**
+    - [x] Base destruction triggers Game Over.
+    - [x] Player lives 0 triggers Game Over.
+    - [x] Killing all enemies triggers Victory.
+    - [x] Restart button works.
+- [x] **Items**
+    - [x] Enemies drop items.
+    - [x] Picking up items applies effects (Life Up, Power Up).
+- [x] **Technical**
+    - [x] Single `index.html` file.
+    - [x] No external assets (images/sounds).
+    - [x] Code is commented.
