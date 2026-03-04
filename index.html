@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="极简在线二维码生成工具 - 粘贴链接即可生成二维码">
+    <title>Instant QR - 极简二维码生成器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8b8b9a;
+            --text-muted: #5a5a6a;
+            --accent: #00d4aa;
+            --accent-glow: rgba(0, 212, 170, 0.15);
+            --border: #2a2a3a;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(100, 50, 200, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 20% 80%, rgba(0, 100, 150, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        .header {
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .main-card {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 
+                0 4px 24px var(--shadow),
+                0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .input-field {
+            width: 100%;
+            min-height: 120px;
+            padding: 1.25rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .input-field:focus::placeholder {
+            opacity: 0.5;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qr-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .qr-container.has-qr {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .qr-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-placeholder.hidden {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .qr-placeholder svg {
+            width: 48px;
+            height: 48px;
+            opacity: 0.4;
+        }
+
+        .qr-placeholder span {
+            font-size: 0.85rem;
+        }
+
+        #qrcode {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qrcode canvas {
+            border-radius: 8px;
+            animation: qrAppear 0.4s ease-out;
+        }
+
+        @keyframes qrAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .qr-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .qr-hint.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1.5rem 1rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+
+            .input-field {
+                min-height: 100px;
+                font-size: 0.9rem;
+            }
+
+            .qr-container {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">Instant<span>QR</span></h1>
+            <p class="tagline">粘贴链接，即刻生成二维码</p>
+        </header>
+
+        <main class="main-card">
+            <div class="input-wrapper">
+                <label class="input-label" for="input-text">输入内容</label>
+                <textarea 
+                    id="input-text" 
+                    class="input-field" 
+                    placeholder="粘贴你的网址或文本链接..."
+                    autofocus
+                ></textarea>
+                <div class="status-indicator" id="status"></div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-container" id="qr-container">
+                    <div class="qr-placeholder" id="qr-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="3" height="3"/>
+                            <rect x="18" y="14" width="3" height="3"/>
+                            <rect x="14" y="18" width="3" height="3"/>
+                            <rect x="18" y="18" width="3" height="3"/>
+                        </svg>
+                        <span>等待输入...</span>
+                    </div>
+                    <div id="qrcode"></div>
+                </div>
+                <p class="qr-hint" id="qr-hint">右键点击图片即可保存</p>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>无需注册 · 无需安装 · 完全免费</p>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const QRCode = (function() {
+                const ECL = { L: 1, M: 0, Q: 3, H: 2 };
+                
+                const EXP = new Uint8Array(256);
+                const LOG = new Uint8Array(256);
+                (function() {
+                    let x = 1;
+                    for (let i = 0; i < 255; i++) {
+                        EXP[i] = x;
+                        LOG[x] = i;
+                        x <<= 1;
+                        if (x & 256) x ^= 285;
+                    }
+                    EXP[255] = EXP[0];
+                })();
+
+                function mul(a, b) {
+                    if (a === 0 || b === 0) return 0;
+                    return EXP[(LOG[a] + LOG[b]) % 255];
+                }
+
+                function div(a, b) {
+                    if (b === 0) throw new Error('Division by zero');
+                    if (a === 0) return 0;
+                    return EXP[(LOG[a] - LOG[b] + 255) % 255];
+                }
+
+                function polyMul(p1, p2) {
+                    const result = new Uint8Array(p1.length + p2.length - 1);
+                    for (let i = 0; i < p1.length; i++) {
+                        for (let j = 0; j < p2.length; j++) {
+                            result[i + j] ^= mul(p1[i], p2[j]);
+                        }
+                    }
+                    return result;
+                }
+
+                function generatorPoly(n) {
+                    let g = new Uint8Array([1]);
+                    for (let i = 0; i < n; i++) {
+                        g = polyMul(g, new Uint8Array([1, EXP[i]]));
+                    }
+                    return g;
+                }
+
+                function rsEncode(data, ecLen) {
+                    const gen = generatorPoly(ecLen);
+                    const result = new Uint8Array(data.length + ecLen);
+                    result.set(data);
+                    
+                    for (let i = 0; i < data.length; i++) {
+                        const coef = result[i];
+                        if (coef !== 0) {
+                            for (let j = 0; j < gen.length; j++) {
+                                result[i + j] ^= mul(gen[j], coef);
+                            }
+                        }
+                    }
+                    
+                    return result.slice(data.length);
+                }
+
+                const CAPACITIES = [
+                    [19, 16, 13, 9], [34, 28, 22, 16], [55, 44, 34, 26], [80, 64, 48, 36],
+                    [108, 86, 62, 46], [136, 108, 76, 60], [156, 124, 88, 66], [194, 154, 110, 86],
+                    [232, 182, 132, 100], [274, 216, 154, 122], [324, 254, 180, 140], [370, 290, 206, 158],
+                    [428, 334, 244, 180], [461, 365, 261, 197], [523, 415, 295, 223], [589, 453, 325, 253],
+                    [647, 507, 367, 283], [721, 563, 397, 313], [795, 627, 445, 341], [861, 669, 485, 385],
+                    [932, 714, 512, 406], [1006, 782, 568, 442], [1094, 860, 614, 464], [1174, 914, 664, 514],
+                    [1276, 1000, 718, 538], [1370, 1062, 754, 596], [1468, 1128, 808, 628], [1531, 1193, 871, 661],
+                    [1631, 1267, 911, 701], [1735, 1373, 985, 745], [1843, 1455, 1033, 793], [1955, 1541, 1115, 845],
+                    [2071, 1631, 1171, 901], [2191, 1735, 1231, 961], [2306, 1843, 1286, 986], [2434, 1955, 1354, 1054],
+                    [2566, 2071, 1426, 1096], [2702, 2191, 1502, 1142], [2812, 2306, 1582, 1222], [2956, 2434, 1666, 1276]
+                ];
+
+                const EC_CODEWORDS = [
+                    [7, 10, 13, 17], [10, 16, 22, 28], [15, 26, 36, 44], [20, 36, 52, 64],
+                    [26, 48, 72, 88], [36, 64, 96, 112], [40, 72, 108, 130], [48, 88, 132, 156],
+                    [60, 110, 160, 192], [72, 130, 192, 224], [80, 150, 224, 264], [96, 176, 260, 308],
+                    [104, 198, 288, 352], [120, 216, 320, 384], [132, 240, 360, 432], [144, 280, 408, 480],
+                    [168, 308, 448, 532], [180, 338, 504, 588], [196, 364, 546, 650], [224, 416, 600, 700],
+                    [224, 442, 644, 750], [252, 476, 690, 816], [270, 504, 750, 900], [300, 560, 810, 960],
+                    [312, 588, 870, 1050], [336, 644, 952, 1110], [360, 700, 1020, 1200], [390, 728, 1050, 1260],
+                    [420, 784, 1140, 1350], [450, 812, 1200, 1440], [480, 868, 1290, 1530], [510, 924, 1350, 1620],
+                    [540, 980, 1440, 1710], [570, 1036, 1530, 1800], [570, 1064, 1590, 1890], [600, 1120, 1680, 1980],
+                    [630, 1204, 1770, 2100], [660, 1260, 1860, 2220], [720, 1316, 1950, 2310], [750, 1372, 2040, 2430]
+                ];
+
+                const NUM_BLOCKS = [
+                    [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 2, 2], [1, 2, 2, 4],
+                    [1, 2, 4, 4], [2, 4, 4, 4], [2, 4, 6, 5], [2, 4, 6, 6],
+                    [2, 5, 8, 8], [4, 5, 8, 8], [4, 5, 8, 11], [4, 8, 10, 11],
+                    [4, 9, 12, 16], [4, 9, 16, 16], [6, 10, 12, 18], [6, 10, 17, 16],
+                    [6, 11, 16, 19], [6, 13, 18, 21], [7, 14, 21, 25], [8, 16, 20, 25],
+                    [8, 17, 23, 25], [9, 17, 23, 34], [9, 18, 25, 30], [10, 20, 27, 32],
+                    [12, 21, 29, 35], [12, 23, 34, 37], [12, 25, 34, 40], [13, 26, 35, 42],
+                    [14, 28, 38, 45], [15, 29, 40, 48], [16, 31, 43, 51], [17, 33, 45, 54],
+                    [18, 35, 48, 57], [19, 37, 51, 60], [19, 38, 53, 63], [20, 40, 56, 66],
+                    [21, 43, 59, 70], [22, 45, 62, 74], [24, 47, 65, 77], [25, 49, 68, 81]
+                ];
+
+                const EC_PER_BLOCK = [
+                    [7, 10, 13, 17], [10, 16, 22, 28], [15, 26, 18, 22], [20, 18, 26, 16],
+                    [26, 24, 18, 22], [18, 16, 24, 28], [20, 18, 18, 26], [24, 22, 22, 26],
+                    [30, 22, 20, 24], [18, 26, 24, 28], [20, 30, 28, 24], [24, 22, 26, 28],
+                    [26, 22, 24, 22], [30, 24, 20, 24], [22, 24, 30, 24], [24, 28, 24, 30],
+                    [28, 28, 28, 28], [30, 28, 30, 28], [28, 26, 28, 30], [28, 28, 28, 30],
+                    [28, 26, 26, 26], [28, 26, 30, 28], [28, 26, 28, 30], [28, 26, 30, 28],
+                    [28, 26, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30],
+                    [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30],
+                    [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30],
+                    [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30], [28, 28, 30, 30]
+                ];
+
+                function getVersion(len, ecl) {
+                    for (let v = 0; v < 40; v++) {
+                        if (len <= CAPACITIES[v][ecl]) return v + 1;
+                    }
+                    return 40;
+                }
+
+                function encodeData(text, version, ecl) {
+                    const bytes = new TextEncoder().encode(text);
+                    const capacity = CAPACITIES[version - 1][ecl];
+                    
+                    if (bytes.length > capacity) {
+                        throw new Error('Text too long');
+                    }
+
+                    const bits = [];
+                    
+                    bits.push(0, 1, 0, 0);
+                    
+                    const lenBits = version < 10 ? 8 : 16;
+                    for (let i = lenBits - 1; i >= 0; i--) {
+                        bits.push((bytes.length >> i) & 1);
+                    }
+                    
+                    for (const byte of bytes) {
+                        for (let i = 7; i >= 0; i--) {
+                            bits.push((byte >> i) & 1);
+                        }
+                    }
+                    
+                    const totalDataBits = (CAPACITIES[version - 1][ecl] + EC_CODEWORDS[version - 1][ecl]) * 8;
+                    
+                    const terminatorLen = Math.min(4, totalDataBits - bits.length);
+                    for (let i = 0; i < terminatorLen; i++) bits.push(0);
+                    
+                    while (bits.length % 8 !== 0) bits.push(0);
+                    
+                    const padPatterns = [0xEC, 0x11];
+                    let padIndex = 0;
+                    while (bits.length < totalDataBits) {
+                        const pad = padPatterns[padIndex % 2];
+                        for (let i = 7; i >= 0; i--) {
+                            bits.push((pad >> i) & 1);
+                        }
+                        padIndex++;
+                    }
+                    
+                    const data = new Uint8Array(bits.length / 8);
+                    for (let i = 0; i < data.length; i++) {
+                        let byte = 0;
+                        for (let j = 0; j < 8; j++) {
+                            byte = (byte << 1) | bits[i * 8 + j];
+                        }
+                        data[i] = byte;
+                    }
+                    
+                    return data;
+                }
+
+                function interleave(data, version, ecl) {
+                    const numBlocks = NUM_BLOCKS[version - 1][ecl];
+                    const ecPerBlock = EC_PER_BLOCK[version - 1][ecl];
+                    const totalDataCodewords = CAPACITIES[version - 1][ecl];
+                    const totalEcCodewords = EC_CODEWORDS[version - 1][ecl];
+                    
+                    const shortBlockLen = Math.floor(totalDataCodewords / numBlocks);
+                    const numLongBlocks = totalDataCodewords % numBlocks;
+                    
+                    const blocks = [];
+                    let offset = 0;
+                    
+                    for (let i = 0; i < numBlocks; i++) {
+                        const len = shortBlockLen + (i >= numBlocks - numLongBlocks ? 1 : 0);
+                        blocks.push(data.slice(offset, offset + len));
+                        offset += len;
+                    }
+                    
+                    const ecBlocks = blocks.map(block => rsEncode(block, ecPerBlock));
+                    
+                    const result = [];
+                    
+                    const maxBlockLen = shortBlockLen + 1;
+                    for (let i = 0; i < maxBlockLen; i++) {
+                        for (let j = 0; j < numBlocks; j++) {
+                            if (i < blocks[j].length) {
+                                result.push(blocks[j][i]);
+                            }
+                        }
+                    }
+                    
+                    for (let i = 0; i < ecPerBlock; i++) {
+                        for (let j = 0; j < numBlocks; j++) {
+                            result.push(ecBlocks[j][i]);
+                        }
+                    }
+                    
+                    return new Uint8Array(result);
+                }
+
+                function createMatrix(version) {
+                    const size = version * 4 + 17;
+                    const matrix = [];
+                    const reserved = [];
+                    
+                    for (let i = 0; i < size; i++) {
+                        matrix.push(new Array(size).fill(null));
+                        reserved.push(new Array(size).fill(false));
+                    }
+                    
+                    const addFinder = (row, col) => {
+                        for (let r = -1; r <= 7; r++) {
+                            for (let c = -1; c <= 7; c++) {
+                                const rr = row + r, cc = col + c;
+                                if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+                                
+                                let val = false;
+                                if (r >= 0 && r <= 6 && c >= 0 && c <= 6) {
+                                    if (r === 0 || r === 6 || c === 0 || c === 6 ||
+                                        (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
+                                        val = true;
+                                    }
+                                }
+                                matrix[rr][cc] = val;
+                                reserved[rr][cc] = true;
+                            }
+                        }
+                    };
+                    
+                    addFinder(0, 0);
+                    addFinder(0, size - 7);
+                    addFinder(size - 7, 0);
+                    
+                    for (let i = 8; i < size - 8; i++) {
+                        matrix[6][i] = i % 2 === 0;
+                        matrix[i][6] = i % 2 === 0;
+                        reserved[6][i] = true;
+                        reserved[i][6] = true;
+                    }
+                    
+                    if (version >= 2) {
+                        const alignPos = [];
+                        const intervals = Math.floor(version / 7) + 2;
+                        const step = Math.ceil((size - 13) / (intervals - 1));
+                        
+                        alignPos.push(6);
+                        for (let i = 1; i < intervals; i++) {
+                            alignPos.push(Math.min(6 + i * step, size - 7));
+                        }
+                        
+                        for (const row of alignPos) {
+                            for (const col of alignPos) {
+                                if (reserved[row][col]) continue;
+                                
+                                for (let r = -2; r <= 2; r++) {
+                                    for (let c = -2; c <= 2; c++) {
+                                        const rr = row + r, cc = col + c;
+                                        if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+                                        
+                                        let val = false;
+                                        if (Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0)) {
+                                            val = true;
+                                        }
+                                        matrix[rr][cc] = val;
+                                        reserved[rr][cc] = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    return { matrix, reserved, size };
+                }
+
+                function applyMask(matrix, reserved, maskNum) {
+                    const size = matrix.length;
+                    const result = matrix.map(row => [...row]);
+                    
+                    const maskFns = [
+                        (r, c) => (r + c) % 2 === 0,
+                        (r, c) => r % 2 === 0,
+                        (r, c) => c % 3 === 0,
+                        (r, c) => (r + c) % 3 === 0,
+                        (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
+                        (r, c) => ((r * c) % 2) + ((r * c) % 3) === 0,
+                        (r, c) => (((r * c) % 2) + ((r * c) % 3)) % 2 === 0,
+                        (r, c) => (((r + c) % 2) + ((r * c) % 3)) % 2 === 0
+                    ];
+                    
+                    const maskFn = maskFns[maskNum];
+                    
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (!reserved[r][c] && maskFn(r, c)) {
+                                result[r][c] = !result[r][c];
+                            }
+                        }
+                    }
+                    
+                    return result;
+                }
+
+                function addFormatInfo(matrix, reserved, ecl, maskNum) {
+                    const size = matrix.length;
+                    const result = matrix.map(row => [...row]);
+                    
+                    const formatBits = [];
+                    const data = (ecl << 3) | maskNum;
+                    
+                    let rem = data << 10;
+                    for (let i = 4; i >= 0; i--) {
+                        if (rem & (1 << (i + 10))) {
+                            rem ^= 0x537 << i;
+                        }
+                    }
+                    const format = ((data << 10) | rem) ^ 0x5412;
+                    
+                    for (let i = 0; i < 15; i++) {
+                        formatBits.push((format >> (14 - i)) & 1);
+                    }
+                    
+                    for (let i = 0; i < 6; i++) {
+                        result[8][i] = formatBits[i] === 1;
+                        result[i][8] = formatBits[14 - i] === 1;
+                    }
+                    result[8][7] = formatBits[6] === 1;
+                    result[8][8] = formatBits[7] === 1;
+                    result[7][8] = formatBits[8] === 1;
+                    
+                    for (let i = 0; i < 7; i++) {
+                        result[8][size - 1 - i] = formatBits[i] === 1;
+                        result[size - 1 - i][8] = formatBits[14 - i] === 1;
+                    }
+                    result[size - 8][8] = true;
+                    
+                    return result;
+                }
+
+                function addVersionInfo(matrix, version) {
+                    if (version < 7) return matrix;
+                    
+                    const size = matrix.length;
+                    const result = matrix.map(row => [...row]);
+                    
+                    let versionBits = version << 12;
+                    for (let i = 5; i >= 0; i--) {
+                        if (versionBits & (1 << (i + 12))) {
+                            versionBits ^= 0x1F25 << i;
+                        }
+                    }
+                    const versionInfo = (version << 12) | versionBits;
+                    
+                    for (let i = 0; i < 18; i++) {
+                        const bit = ((versionInfo >> i) & 1) === 1;
+                        const r = Math.floor(i / 3);
+                        const c = size - 11 + (i % 3);
+                        result[r][c] = bit;
+                        result[c][r] = bit;
+                    }
+                    
+                    return result;
+                }
+
+                function placeData(matrix, reserved, data) {
+                    const size = matrix.length;
+                    const result = matrix.map(row => [...row]);
+                    
+                    let bitIndex = 0;
+                    let upward = true;
+                    
+                    for (let col = size - 1; col > 0; col -= 2) {
+                        if (col === 6) col = 5;
+                        
+                        for (let row = upward ? size - 1 : 0; upward ? row >= 0 : row < size; upward ? row-- : row++) {
+                            for (let c = 0; c < 2; c++) {
+                                const cc = col - c;
+                                if (!reserved[row][cc]) {
+                                    if (bitIndex < data.length * 8) {
+                                        const byte = data[Math.floor(bitIndex / 8)];
+                                        const bit = (byte >> (7 - (bitIndex % 8))) & 1;
+                                        result[row][cc] = bit === 1;
+                                        bitIndex++;
+                                    } else {
+                                        result[row][cc] = false;
+                                    }
+                                }
+                            }
+                        }
+                        upward = !upward;
+                    }
+                    
+                    return result;
+                }
+
+                function calculatePenalty(matrix) {
+                    const size = matrix.length;
+                    let penalty = 0;
+                    
+                    for (let r = 0; r < size; r++) {
+                        let count = 1;
+                        for (let c = 1; c < size; c++) {
+                            if (matrix[r][c] === matrix[r][c - 1]) {
+                                count++;
+                            } else {
+                                if (count >= 5) penalty += count - 2;
+                                count = 1;
+                            }
+                        }
+                        if (count >= 5) penalty += count - 2;
+                    }
+                    
+                    for (let c = 0; c < size; c++) {
+                        let count = 1;
+                        for (let r = 1; r < size; r++) {
+                            if (matrix[r][c] === matrix[r - 1][c]) {
+                                count++;
+                            } else {
+                                if (count >= 5) penalty += count - 2;
+                                count = 1;
+                            }
+                        }
+                        if (count >= 5) penalty += count - 2;
+                    }
+                    
+                    for (let r = 0; r < size - 1; r++) {
+                        for (let c = 0; c < size - 1; c++) {
+                            const val = matrix[r][c];
+                            if (val === matrix[r][c + 1] &&
+                                val === matrix[r + 1][c] &&
+                                val === matrix[r + 1][c + 1]) {
+                                penalty += 3;
+                            }
+                        }
+                    }
+                    
+                    const pattern1 = [true, false, true, true, true, false, true, false, false, false, false];
+                    const pattern2 = [false, false, false, false, true, false, true, true, true, false, true];
+                    
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c <= size - 11; c++) {
+                            let match1 = true, match2 = true;
+                            for (let i = 0; i < 11; i++) {
+                                if (matrix[r][c + i] !== pattern1[i]) match1 = false;
+                                if (matrix[r][c + i] !== pattern2[i]) match2 = false;
+                            }
+                            if (match1 || match2) penalty += 40;
+                        }
+                    }
+                    
+                    for (let c = 0; c < size; c++) {
+                        for (let r = 0; r <= size - 11; r++) {
+                            let match1 = true, match2 = true;
+                            for (let i = 0; i < 11; i++) {
+                                if (matrix[r + i][c] !== pattern1[i]) match1 = false;
+                                if (matrix[r + i][c] !== pattern2[i]) match2 = false;
+                            }
+                            if (match1 || match2) penalty += 40;
+                        }
+                    }
+                    
+                    let darkCount = 0;
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (matrix[r][c]) darkCount++;
+                        }
+                    }
+                    const percent = (darkCount * 100) / (size * size);
+                    const prev5 = Math.floor(percent / 5) * 5;
+                    const next5 = prev5 + 5;
+                    penalty += Math.min(Math.abs(prev5 - 50), Math.abs(next5 - 50)) * 2;
+                    
+                    return penalty;
+                }
+
+                function generate(text, ecl = 'M') {
+                    const eclIndex = ECL[ecl] || 0;
+                    const version = getVersion(new TextEncoder().encode(text).length, eclIndex);
+                    
+                    const data = encodeData(text, version, eclIndex);
+                    const interleaved = interleave(data, version, eclIndex);
+                    
+                    const { matrix, reserved, size } = createMatrix(version);
+                    
+                    let bestMatrix = null;
+                    let bestPenalty = Infinity;
+                    let bestMask = 0;
+                    
+                    for (let mask = 0; mask < 8; mask++) {
+                        let m = placeData(matrix, reserved, interleaved);
+                        m = applyMask(m, reserved, mask);
+                        m = addFormatInfo(m, reserved, eclIndex, mask);
+                        m = addVersionInfo(m, version);
+                        
+                        const penalty = calculatePenalty(m);
+                        if (penalty < bestPenalty) {
+                            bestPenalty = penalty;
+                            bestMatrix = m;
+                            bestMask = mask;
+                        }
+                    }
+                    
+                    return { matrix: bestMatrix, size };
+                }
+
+                return { generate };
+            })();
+
+            const inputEl = document.getElementById('input-text');
+            const qrContainer = document.getElementById('qr-container');
+            const qrPlaceholder = document.getElementById('qr-placeholder');
+            const qrCodeEl = document.getElementById('qrcode');
+            const qrHint = document.getElementById('qr-hint');
+            const statusEl = document.getElementById('status');
+
+            let debounceTimer = null;
+
+            function debounce(fn, delay) {
+                return function(...args) {
+                    clearTimeout(debounceTimer);
+                    statusEl.classList.add('active');
+                    debounceTimer = setTimeout(() => {
+                        fn.apply(this, args);
+                        statusEl.classList.remove('active');
+                    }, delay);
+                };
+            }
+
+            function renderQR(text) {
+                qrCodeEl.innerHTML = '';
+                
+                if (!text || !text.trim()) {
+                    qrPlaceholder.classList.remove('hidden');
+                    qrContainer.classList.remove('has-qr');
+                    qrHint.classList.remove('visible');
+                    return;
+                }
+
+                try {
+                    const { matrix, size } = QRCode.generate(text, 'M');
+                    
+                    const moduleSize = 8;
+                    const margin = 4;
+                    const canvasSize = size * moduleSize + margin * 2 * moduleSize;
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = canvasSize;
+                    canvas.height = canvasSize;
+                    canvas.style.width = '200px';
+                    canvas.style.height = '200px';
+                    
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvasSize, canvasSize);
+                    
+                    ctx.fillStyle = '#000000';
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (matrix[r][c]) {
+                                ctx.fillRect(
+                                    (c + margin) * moduleSize,
+                                    (r + margin) * moduleSize,
+                                    moduleSize,
+                                    moduleSize
+                                );
+                            }
+                        }
+                    }
+                    
+                    qrCodeEl.appendChild(canvas);
+                    qrPlaceholder.classList.add('hidden');
+                    qrContainer.classList.add('has-qr');
+                    qrHint.classList.add('visible');
+                    
+                } catch (error) {
+                    console.error('QR generation failed:', error);
+                    qrPlaceholder.classList.remove('hidden');
+                    qrContainer.classList.remove('has-qr');
+                    qrHint.classList.remove('visible');
+                }
+            }
+
+            const debouncedRender = debounce(renderQR, 1000);
+
+            inputEl.addEventListener('input', function() {
+                debouncedRender(this.value);
+            });
+
+            inputEl.addEventListener('paste', function() {
+                setTimeout(() => {
+                    renderQR(this.value);
+                    statusEl.classList.remove('active');
+                    clearTimeout(debounceTimer);
+                }, 10);
+            });
+        })();
+    </script>
+</body>
+</html>
