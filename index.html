@@ -744,7 +744,8 @@ class Enemy extends Tank {
         this.game.particles.push(new Explosion(this.x, this.y));
         
         if (this.isPowerCarrier) {
-            const type = Math.random() < 0.5 ? 'LIFE' : 'POWER';
+            // 80% Power, 20% Life
+            const type = Math.random() < 0.2 ? 'LIFE' : 'POWER';
             this.game.items.push(new Item(this.x, this.y, type));
         }
     }
@@ -796,7 +797,14 @@ class Bullet extends Entity {
                 this.game.map[gy][gx] = TILE.EMPTY; // Destroy brick
                 return;
             } else if (tile === TILE.IRON) {
-                this.active = false; // Ding! No destroy.
+                // Power Level 3 destroys Iron
+                if (this.owner instanceof Player && this.owner.powerLevel >= 3) {
+                    this.active = false;
+                    this.game.map[gy][gx] = TILE.EMPTY; 
+                    this.game.particles.push(new Explosion(gx*TILE_SIZE, gy*TILE_SIZE));
+                } else {
+                    this.active = false; // Ding! No destroy.
+                }
                 return;
             } else if (tile === TILE.BASE) {
                 this.active = false;
@@ -822,6 +830,8 @@ class Bullet extends Entity {
             if (this.game.player && this.game.player.active && this.intersects(rect, this.game.player.getRect())) {
                 this.active = false;
                 this.game.lives--;
+                // Reset power on death
+                this.game.player.powerLevel = 1; 
                 this.game.player.x = 4 * TILE_SIZE; // Respawn pos
                 this.game.player.y = 12 * TILE_SIZE;
                 this.game.player.dir = DIR.UP;
@@ -857,18 +867,65 @@ class Item extends Entity {
         this.active = false;
         if (this.type === 'LIFE') {
             player.game.lives++;
+            // Visual feedback
+            player.game.particles.push(new FloatingText(this.x, this.y, "1UP!"));
         } else if (this.type === 'POWER') {
-            player.powerLevel = 2; // Simple power up
+            if (player.powerLevel < 3) {
+                player.powerLevel++;
+                const text = player.powerLevel === 2 ? "SPEED UP!" : "MAX POWER!";
+                player.game.particles.push(new FloatingText(this.x, this.y, text));
+            } else {
+                 player.game.particles.push(new FloatingText(this.x, this.y, "MAX!"));
+            }
         }
     }
     
     draw(ctx) {
         if (!this.visible) return;
+        
+        // Draw background box
         ctx.fillStyle = this.type === 'LIFE' ? '#b8bb26' : '#fb4934';
-        ctx.fillRect(this.x + 10, this.y + 10, 20, 20);
+        ctx.fillRect(this.x + 5, this.y + 5, 30, 30);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x + 5, this.y + 5, 30, 30);
+
+        // Draw Icon
         ctx.fillStyle = '#fff';
-        ctx.font = '12px Arial';
-        ctx.fillText(this.type === 'LIFE' ? 'HP' : 'P', this.x + 14, this.y + 24);
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        if (this.type === 'LIFE') {
+            // Heart symbol
+            ctx.fillText('♥', this.x + 20, this.y + 20);
+        } else {
+            // Star symbol
+            ctx.fillText('★', this.x + 20, this.y + 20);
+        }
+    }
+}
+
+class FloatingText {
+    constructor(x, y, text) {
+        this.x = x;
+        this.y = y;
+        this.text = text;
+        this.timer = 0;
+        this.active = true;
+    }
+    
+    update(dt) {
+        this.y -= 20 * dt; // Float up
+        this.timer += dt;
+        if (this.timer > 1.0) this.active = false;
+    }
+    
+    draw(ctx) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.timer})`;
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, this.x + 20, this.y);
     }
 }
 
