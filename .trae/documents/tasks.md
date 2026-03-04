@@ -1,0 +1,25 @@
+# Implementation Tasks
+
+- [x] Initialize Project Structure
+    - [x] Create `index.html` with basic HTML5 boilerplate.
+    - [x] Add `<canvas>` element and setup context.
+- [x] Implement Core Classes
+    - [x] `Game` class (Loop, State Management).
+    - [x] `Entity` base class.
+    - [x] `Tank` class (Player & Enemy).
+    - [x] `Bullet` class.
+    - [x] `Map` class (Tile rendering & collision).
+    - [x] `Item` class.
+- [x] Implement Game Logic
+    - [x] Player Movement & Shooting.
+    - [x] Enemy Spawning & Basic AI.
+    - [x] Collision Detection (Tank-Wall, Bullet-Tank, Bullet-Wall).
+    - [x] Win/Loss Conditions (Base destruction, Player lives, Enemy count).
+- [x] Implement UI & Polish
+    - [x] Start Screen.
+    - [x] HUD (Lives, Enemies).
+    - [x] Game Over / Victory Screens.
+    - [x] Item Drops & Effects.
+- [x] Final Verification
+    - [x] Check all P1 requirements.
+    - [x] Check P2 requirements (Timer, etc.).
