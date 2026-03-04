@@ -29,7 +29,7 @@ function QRGenerator({ debounceMs = 1000, qrSize = 256 }: QRGeneratorProps) {
     try {
       const dataUrl = await generateQRCode(text, { width: qrSize });
       setQrDataUrl(dataUrl);
-    } catch (err) {
+    } catch {
       setError('生成二维码失败，请重试');
       setQrDataUrl(null);
     } finally {
