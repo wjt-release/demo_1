@@ -5,7 +5,7 @@ const UI = () => {
   const { isNight, toggleNight, showContours, toggleContours } = useStore();
 
   return (
-    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl pointer-events-auto z-10">
+    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl pointer-events-auto z-50">
       <button 
         onClick={toggleNight}
         className={`px-6 py-2 rounded-xl font-medium transition-all duration-300 ${
