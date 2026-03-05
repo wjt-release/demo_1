@@ -234,16 +234,28 @@
         .heatmap-container {
             display: grid;
             grid-template-columns: 50px repeat(24, 1fr);
-            grid-template-rows: auto repeat(7, 1fr);
-            gap: 2px;
+            grid-template-rows: 24px repeat(7, 1fr);
+            gap: 3px;
             height: 100%;
+            overflow: hidden;
+        }
+
+        .heatmap-corner {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .heatmap-hour-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-secondary);
             text-align: center;
-            padding: 4px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
         }
 
         .heatmap-day-label {
@@ -259,7 +271,7 @@
             border-radius: 3px;
             transition: all 0.2s ease;
             cursor: pointer;
-            min-height: 20px;
+            min-height: 24px;
         }
 
         .heatmap-cell:hover {
@@ -633,9 +645,12 @@
             const container = document.getElementById('heatmapContainer');
             const data = generateHeatmapData();
             const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-            const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
             container.innerHTML = '';
+
+            const corner = document.createElement('div');
+            corner.className = 'heatmap-corner';
+            container.appendChild(corner);
 
             for (let hour = 0; hour < 24; hour++) {
                 const label = document.createElement('div');
@@ -656,11 +671,11 @@
                     const value = data[day][hour];
                     const intensity = value / 100;
                     
-                    const r = Math.floor(6 + (6 - 6) * intensity);
-                    const g = Math.floor(182 + (56 - 182) * intensity);
-                    const b = Math.floor(212 + (180 - 212) * intensity);
+                    const r = Math.floor(6 + (59 - 6) * intensity);
+                    const g = Math.floor(182 + (130 - 182) * intensity);
+                    const b = Math.floor(212 + (246 - 212) * intensity);
                     
-                    cell.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${0.3 + intensity * 0.7})`;
+                    cell.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${0.4 + intensity * 0.6})`;
                     cell.dataset.day = days[day];
                     cell.dataset.hour = hour;
                     cell.dataset.value = value;
