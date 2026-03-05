@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霓虹梦境 | Neon Dreams</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-cyan: #05d9e8;
+            --neon-purple: #b967ff;
+            --deep-space: #0d0221;
+            --midnight: #1a1a2e;
+            --electric-blue: #4a4e69;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--deep-space);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(5, 217, 232, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(5, 217, 232, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 500px;
+            transform-style: preserve-3d;
+        }
+
+        .grid-bg::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(255, 42, 109, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(255, 42, 109, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px;
+            transform: rotateX(60deg);
+            transform-origin: bottom;
+        }
+
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--neon-pink);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--neon-cyan);
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--neon-purple);
+            top: 50%;
+            left: 50%;
+            animation-delay: -2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 10px) scale(1.05); }
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(5, 217, 232, 0.2);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(5, 217, 232, 0.5);
+            letter-spacing: 3px;
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 10;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: glitchIn 1s ease forwards;
+        }
+
+        .hero-title .line {
+            display: block;
+        }
+
+        .hero-title .line:nth-child(1) {
+            color: var(--neon-cyan);
+            text-shadow: 
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                0 0 80px var(--neon-cyan);
+            animation: glitchIn 1s ease forwards 0.2s, flicker 3s infinite 1.2s;
+            animation-fill-mode: backwards;
+        }
+
+        .hero-title .line:nth-child(2) {
+            color: var(--neon-pink);
+            text-shadow: 
+                0 0 10px var(--neon-pink),
+                0 0 20px var(--neon-pink),
+                0 0 40px var(--neon-pink),
+                0 0 80px var(--neon-pink);
+            animation: glitchIn 1s ease forwards 0.4s, flicker 3s infinite 2s;
+            animation-fill-mode: backwards;
+        }
+
+        @keyframes glitchIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) skewX(-10deg);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) skewX(0);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            97% { opacity: 1; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.6s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px 40px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 
+                0 0 10px rgba(5, 217, 232, 0.3),
+                inset 0 0 10px rgba(5, 217, 232, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: var(--neon-cyan);
+            color: var(--deep-space);
+            box-shadow: 
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                inset 0 0 20px rgba(5, 217, 232, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            box-shadow: 
+                0 0 10px rgba(255, 42, 109, 0.3),
+                inset 0 0 10px rgba(255, 42, 109, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neon-pink);
+            color: var(--deep-space);
+            box-shadow: 
+                0 0 20px var(--neon-pink),
+                0 0 40px var(--neon-pink),
+                inset 0 0 20px rgba(255, 42, 109, 0.3);
+        }
+
+        .features {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 60px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 46, 0.6);
+            border: 1px solid rgba(5, 217, 232, 0.2);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 
+                0 0 30px rgba(5, 217, 232, 0.2),
+                inset 0 0 30px rgba(5, 217, 232, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .feature-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--neon-cyan);
+            stroke-width: 1.5;
+            fill: none;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            opacity: 0.3;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .counter-section {
+            position: relative;
+            z-index: 10;
+            padding: 80px 40px;
+            background: rgba(13, 2, 33, 0.8);
+            border-top: 1px solid rgba(5, 217, 232, 0.2);
+            border-bottom: 1px solid rgba(5, 217, 232, 0.2);
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .counter-item {
+            padding: 20px;
+        }
+
+        .counter-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .counter-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(5, 217, 232, 0.1);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .interactive-demo {
+            position: relative;
+            z-index: 10;
+            padding: 60px 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .color-picker-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .color-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .color-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        .demo-output {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            padding: 30px 50px;
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(5, 217, 232, 0.3);
+            text-align: center;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            nav {
+                gap: 20px;
+            }
+
+            .hero-title {
+                font-size: clamp(2rem, 8vw, 4rem);
+            }
+
+            .cta-container {
+                flex-direction: column;
+            }
+
+            .features {
+                padding: 40px 20px;
+            }
+
+            .counter-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+    <div class="grid-bg"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="scan-line"></div>
+
+    <header>
+        <div class="logo">NEON</div>
+        <nav>
+            <a href="#home">首页</a>
+            <a href="#features">功能</a>
+            <a href="#demo">演示</a>
+            <a href="#contact">联系</a>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <h1 class="hero-title">
+            <span class="line">霓虹</span>
+            <span class="line">梦境</span>
+        </h1>
+        <p class="hero-subtitle">
+            探索赛博朋克美学的极致体验，在数字与光影的交织中，发现未来的无限可能。沉浸式视觉设计，让每一次交互都成为一场视觉盛宴。
+        </p>
+        <div class="cta-container">
+            <button class="btn btn-primary" onclick="startExperience()">开始体验</button>
+            <button class="btn btn-secondary" onclick="scrollToDemo()">互动演示</button>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">动态光效</h3>
+            <p class="feature-desc">精心设计的霓虹灯效果，通过 CSS 动画和滤镜创造出令人惊叹的视觉体验，让界面充满生命力。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="3" y1="9" x2="21" y2="9"/>
+                    <line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">响应式布局</h3>
+            <p class="feature-desc">采用现代 CSS Grid 和 Flexbox 技术，确保在各种设备上都能呈现完美的视觉效果。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">性能优化</h3>
+            <p class="feature-desc">纯 CSS 动画实现，无需 JavaScript 库，确保流畅的 60fps 动画性能和极快的加载速度。</p>
+        </div>
+    </section>
+
+    <section class="interactive-demo" id="demo">
+        <h2 class="demo-title">互动演示</h2>
+        <div class="color-picker-container">
+            <div class="color-buttons">
+                <button class="color-btn active" style="background: #05d9e8; color: #05d9e8;" data-color="#05d9e8" onclick="changeTheme(this)"></button>
+                <button class="color-btn" style="background: #ff2a6d; color: #ff2a6d;" data-color="#ff2a6d" onclick="changeTheme(this)"></button>
+                <button class="color-btn" style="background: #b967ff; color: #b967ff;" data-color="#b967ff" onclick="changeTheme(this)"></button>
+                <button class="color-btn" style="background: #00ff87; color: #00ff87;" data-color="#00ff87" onclick="changeTheme(this)"></button>
+                <button class="color-btn" style="background: #ffd700; color: #ffd700;" data-color="#ffd700" onclick="changeTheme(this)"></button>
+            </div>
+            <div class="demo-output" id="demoOutput">
+                点击上方颜色切换主题
+            </div>
+        </div>
+    </section>
+
+    <section class="counter-section">
+        <div class="counter-grid">
+            <div class="counter-item">
+                <div class="counter-number" data-target="1280">0</div>
+                <div class="counter-label">活跃用户</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="256">0</div>
+                <div class="counter-label">项目案例</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="99">0</div>
+                <div class="counter-label">满意度 %</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="24">0</div>
+                <div class="counter-label">支持小时</div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <p>© 2026 NEON DREAMS. 探索无限可能</p>
+    </footer>
+
+    <script>
+        function changeTheme(btn) {
+            const color = btn.dataset.color;
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.documentElement.style.setProperty('--neon-cyan', color);
+            
+            const output = document.getElementById('demoOutput');
+            output.style.borderColor = color;
+            output.style.boxShadow = `0 0 30px ${color}40, inset 0 0 20px ${color}20`;
+            output.textContent = `主题色已切换为 ${color}`;
+            output.style.color = color;
+            output.style.textShadow = `0 0 20px ${color}`;
+        }
+
+        function startExperience() {
+            const hero = document.querySelector('.hero');
+            hero.style.transform = 'scale(0.95)';
+            hero.style.opacity = '0.5';
+            setTimeout(() => {
+                hero.style.transform = 'scale(1)';
+                hero.style.opacity = '1';
+                document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function scrollToDemo() {
+            document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const start = 0;
+                const startTime = performance.now();
+                
+                function updateCounter(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.floor(start + (target - start) * easeOut);
+                    counter.textContent = current;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    }
+                }
+                
+                requestAnimationFrame(updateCounter);
+            });
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(document.querySelector('.counter-section'));
+
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            card.style.transitionDelay = `${index * 0.1}s`;
+        });
+
+        const featureObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.feature-card').forEach(card => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    });
+                }
+            });
+        }, { threshold: 0.2 });
+
+        featureObserver.observe(document.querySelector('.features'));
+    </script>
+</body>
+</html>
