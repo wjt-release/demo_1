@@ -1,0 +1,14 @@
+export { Home } from './Home';
+export { Login } from './Login';
+export { Register } from './Register';
+export { Products } from './Products';
+export { ProductDetail } from './ProductDetail';
+export { Cart } from './Cart';
+export { Checkout } from './Checkout';
+export { Payment } from './Payment';
+export { Orders } from './Orders';
+export { OrderDetail } from './OrderDetail';
+export { Account } from './Account';
+export { Contact } from './Contact';
+export { Favorites, Coupons, FlashSale, Live } from './ComingSoon';
+export { NotFound } from './NotFound';

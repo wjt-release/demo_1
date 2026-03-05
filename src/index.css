@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1A1A1A;
+  --color-secondary: #FFFFFF;
+  --color-gray: #6B6B6B;
+  --color-beige: #E8E4DE;
+  --color-blue: #1E3A5F;
+  
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+  
+  input, textarea, select {
+    font-family: inherit;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-none font-medium 
+           transition-all duration-300 ease-out
+           hover:bg-primary-light active:scale-[0.98];
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary border border-primary px-6 py-3 rounded-none font-medium
+           transition-all duration-300 ease-out
+           hover:bg-primary hover:text-white active:scale-[0.98];
+  }
+  
+  .btn-outline {
+    @apply bg-transparent text-primary border border-gray-300 px-6 py-3 rounded-none font-medium
+           transition-all duration-300 ease-out
+           hover:border-primary active:scale-[0.98];
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-none
+           transition-all duration-200 ease-out
+           focus:outline-none focus:border-primary;
+  }
+  
+  .card {
+    @apply bg-white shadow-soft transition-all duration-300 ease-out
+           hover:shadow-medium;
+  }
+  
+  .section-title {
+    @apply font-display text-2xl md:text-3xl text-primary mb-8;
+  }
+  
+  .page-container {
+    @apply min-h-screen pt-20;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
