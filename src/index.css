@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: var(--font-body);
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.dark {
+  --bg: #0a0b0f;
+  --fg: rgba(255, 255, 255, 0.88);
+  --muted: rgba(148, 163, 184, 0.65);
+  --accent: #5eead4;
+  --accent-ink: #06161a;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.10);
+  --card-ink: rgba(255, 255, 255, 0.92);
+  --card-muted: rgba(255, 255, 255, 0.56);
+  --card-muted-2: rgba(255, 255, 255, 0.44);
+  --font-body: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", Arial, sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", Arial, sans-serif;
+}
+
+.light {
+  --bg: #f6f7fb;
+  --fg: rgba(10, 11, 15, 0.88);
+  --muted: rgba(71, 85, 105, 0.72);
+  --accent: #0ea5e9;
+  --accent-ink: #041018;
+  --card-bg: rgba(10, 11, 15, 0.03);
+  --card-border: rgba(10, 11, 15, 0.10);
+  --card-ink: rgba(10, 11, 15, 0.92);
+  --card-muted: rgba(10, 11, 15, 0.56);
+  --card-muted-2: rgba(10, 11, 15, 0.44);
+  --font-body: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", Arial, sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", Arial, sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(900px 420px at 14% 18%, rgba(94, 234, 212, 0.16), transparent 62%),
+    radial-gradient(720px 420px at 82% 22%, rgba(56, 189, 248, 0.14), transparent 60%),
+    radial-gradient(720px 520px at 60% 88%, rgba(245, 158, 11, 0.10), transparent 62%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+  opacity: 0.20;
+}
+
+@layer base {
+  :root {
+    --tw-ring-color: rgba(94, 234, 212, 0.35);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
