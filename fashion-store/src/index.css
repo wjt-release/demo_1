@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-black: #000000;
+  --color-primary-white: #ffffff;
+  --color-primary-gray: #f5f5f5;
+  --color-accent-beige: #f5f5dc;
+  --color-accent-blue: #000080;
+}
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  @apply bg-white text-black;
+  margin: 0;
+}
+
+/* Custom styles for Zara/H&M feel */
+.btn-primary {
+  @apply bg-black text-white px-6 py-3 uppercase tracking-widest text-sm transition-all hover:bg-zinc-800 disabled:bg-zinc-400;
+}
+
+.btn-secondary {
+  @apply border border-black text-black px-6 py-3 uppercase tracking-widest text-sm transition-all hover:bg-black hover:text-white;
+}
+
+.input-field {
+  @apply w-full border-b border-zinc-300 py-2 focus:border-black outline-none transition-all;
+}
