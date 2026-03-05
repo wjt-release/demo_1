@@ -1,0 +1,39 @@
+:root {
+  --bg: #07101a;
+  --panel: rgba(10, 18, 28, 0.55);
+  --panel-2: rgba(10, 18, 28, 0.35);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.64);
+  --accent: #9fe7ff;
+  --accent-2: #ffd39b;
+  --shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+
+  background: radial-gradient(1200px 800px at 25% 15%, rgba(68, 110, 140, 0.2), transparent 60%),
+    radial-gradient(900px 700px at 70% 10%, rgba(255, 194, 130, 0.16), transparent 55%),
+    radial-gradient(1000px 900px at 55% 70%, rgba(78, 130, 110, 0.18), transparent 60%),
+    var(--bg);
+
+  color: var(--text);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
