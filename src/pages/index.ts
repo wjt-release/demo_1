@@ -10,5 +10,6 @@ export { Orders } from './Orders';
 export { OrderDetail } from './OrderDetail';
 export { Account } from './Account';
 export { Contact } from './Contact';
-export { Favorites, Coupons, FlashSale, Live } from './ComingSoon';
+export { Favorites } from './Favorites';
+export { Coupons, FlashSale, Live } from './ComingSoon';
 export { NotFound } from './NotFound';

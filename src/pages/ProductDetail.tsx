@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Heart, Share2, Truck, RotateCcw, Shield } fr
 import { Header, Footer, Layout } from '@/components/layout';
 import { Button, StarRating } from '@/components/common';
 import { useCartStore } from '@/store/cartStore';
+import { useFavoritesStore } from '@/store/favoritesStore';
 import { getProductById, products } from '@/data/products';
 import { getReviewsByProductId, getAverageRating } from '@/data/reviews';
 import { ProductCard } from '@/components/home';
@@ -13,6 +14,7 @@ export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem, isItemInCart } = useCartStore();
+  const { toggleFavorite, isFavorite } = useFavoritesStore();
   
   const product = getProductById(id || '');
   const reviews = product ? getReviewsByProductId(product.id) : [];
@@ -135,14 +137,30 @@ export function ProductDetail() {
 
             <div>
               <div className="mb-6">
-                {product.isNew && (
-                  <span className="inline-block bg-primary text-white text-xs px-2 py-1 mb-3">
-                    新品上市
-                  </span>
-                )}
-                <h1 className="font-display text-2xl md:text-3xl font-medium text-primary mb-2">
-                  {product.name}
-                </h1>
+                <div className="flex items-start justify-between">
+                  <div>
+                    {product.isNew && (
+                      <span className="inline-block bg-primary text-white text-xs px-2 py-1 mb-3">
+                        新品上市
+                      </span>
+                    )}
+                    <h1 className="font-display text-2xl md:text-3xl font-medium text-primary mb-2">
+                      {product.name}
+                    </h1>
+                  </div>
+                  <button
+                    onClick={() => toggleFavorite(product)}
+                    className="p-2 hover:bg-gray-100 transition-colors"
+                  >
+                    <Heart
+                      className={`w-6 h-6 transition-colors ${
+                        isFavorite(product.id)
+                          ? 'fill-status-error text-status-error'
+                          : 'text-gray-400 hover:text-status-error'
+                      }`}
+                    />
+                  </button>
+                </div>
                 <div className="flex items-center gap-4">
                   <StarRating rating={averageRating} showValue />
                   <span className="text-sm text-gray-500">({reviews.length} 条评价)</span>

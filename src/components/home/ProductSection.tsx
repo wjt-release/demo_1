@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Heart } from 'lucide-react';
 import { Product } from '@/types';
+import { useFavoritesStore } from '@/store/favoritesStore';
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +10,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
+  const { toggleFavorite, isFavorite } = useFavoritesStore();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -40,6 +43,22 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
             </span>
           )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(product);
+            }}
+            className="absolute bottom-3 right-3 p-2 bg-white/80 hover:bg-white transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <Heart
+              className={`w-5 h-5 transition-colors ${
+                isFavorite(product.id)
+                  ? 'fill-status-error text-status-error'
+                  : 'text-gray-400 hover:text-status-error'
+              }`}
+            />
+          </button>
         </div>
         <div className="mt-4">
           <h3 className="text-sm font-medium text-primary line-clamp-2 group-hover:underline">
