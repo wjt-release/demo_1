@@ -25,6 +25,7 @@ export default function LightingCycle({ time01 }: LightingCycleProps) {
   const sunRef = useRef<THREE.DirectionalLight | null>(null);
   const fillRef = useRef<THREE.HemisphereLight | null>(null);
   const target = useMemo(() => new THREE.Object3D(), []);
+  const tRef = useRef(0.33);
 
   const colors = useMemo(() => {
     return {
@@ -43,12 +44,13 @@ export default function LightingCycle({ time01 }: LightingCycleProps) {
     s.target = target;
   }, [target]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const s = sunRef.current;
     const h = fillRef.current;
     if (!s || !h) return;
 
-    const { sun, daylight } = sunParams(time01);
+    tRef.current = THREE.MathUtils.damp(tRef.current, time01, 6.5, delta);
+    const { sun, daylight } = sunParams(tRef.current);
     const elev = sun.y;
     const dusk = THREE.MathUtils.smoothstep(daylight, 0.0, 0.55) * (1.0 - daylight);
     const night = 1.0 - daylight;

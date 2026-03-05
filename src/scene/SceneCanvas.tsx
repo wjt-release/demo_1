@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useSceneStore } from "@/state/useSceneStore";
 import LightingCycle from "@/scene/LightingCycle";
+import PostFX from "@/scene/PostFX";
 import River from "@/scene/River";
 import SkyDome from "@/scene/SkyDome";
 import Terrain from "@/scene/Terrain";
@@ -22,6 +23,7 @@ function World() {
 
   const fogRef = useRef<THREE.FogExp2 | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
+  const tRef = useRef(0.33);
 
   const fogColors = useMemo(() => {
     return {
@@ -40,20 +42,22 @@ function World() {
   }, [resetNonce]);
 
   useFrame((_, delta) => {
+    tRef.current = THREE.MathUtils.damp(tRef.current, time01, 6.5, delta);
+
     if (autoCycle) {
       const speed = 1 / 95;
       setTime01((time01 + delta * speed) % 1);
     }
 
-    const s = THREE.MathUtils.clamp(Math.sin(time01 * Math.PI * 2 - 1.2) * 0.5 + 0.5, 0, 1);
+    const s = THREE.MathUtils.clamp(Math.sin(tRef.current * Math.PI * 2 - 1.2) * 0.5 + 0.5, 0, 1);
     const dusk = THREE.MathUtils.smoothstep(s, 0.0, 0.55) * (1.0 - s);
     const col = fogColors.night.clone().lerp(fogColors.dusk, dusk).lerp(fogColors.day, s);
     const density = THREE.MathUtils.lerp(0.004, 0.018, fogAmount) * THREE.MathUtils.lerp(1.35, 0.8, s);
 
     const fog = fogRef.current;
     if (fog) {
-      fog.color.copy(col);
-      fog.density = density;
+      fog.color.lerp(col, 1 - Math.exp(-delta * 4.5));
+      fog.density = THREE.MathUtils.damp(fog.density, density, 6.0, delta);
     }
   });
 
@@ -98,6 +102,13 @@ export default function SceneCanvas() {
     return Math.min(1.35, base);
   });
 
+  useEffect(() => {
+    const base = Math.min(1.5, window.devicePixelRatio || 1);
+    if (quality === "low") setDpr(1);
+    else if (quality === "high") setDpr(base);
+    else setDpr(Math.min(1.35, base));
+  }, [quality]);
+
   const camera = useMemo(() => {
     return {
       fov: 48,
@@ -113,13 +124,19 @@ export default function SceneCanvas() {
         shadows
         dpr={dpr}
         camera={camera}
-        gl={{ antialias: quality !== "low", powerPreference: "high-performance" }}
+        gl={{
+          antialias: quality !== "low",
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.05,
+        }}
       >
         <PerformanceMonitor
           onDecline={() => setDpr((v) => Math.max(1, v - 0.15))}
           onIncline={() => setDpr((v) => Math.min(1.5, v + 0.1))}
         />
         <World />
+        <PostFX />
       </Canvas>
     </div>
   );
