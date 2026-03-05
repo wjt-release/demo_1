@@ -1,0 +1,108 @@
+import { Product } from '../types';
+
+export const products: Product[] = [
+  {
+    id: '1',
+    name: 'Classic Beige Trench Coat',
+    price: 899,
+    originalPrice: 1299,
+    category: 'Coats',
+    images: [
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'A timeless trench coat in a versatile beige hue. Features a double-breasted front, belted waist, and storm flap.',
+    reviews: [],
+    isNew: true,
+    isBestSeller: true,
+  },
+  {
+    id: '2',
+    name: 'Silk Blend Midi Dress',
+    price: 599,
+    category: 'Dresses',
+    images: [
+      'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['S', 'M', 'L'],
+    description: 'Elegant midi dress crafted from a soft silk blend. Perfect for evening occasions.',
+    reviews: [],
+    isBestSeller: true,
+  },
+  {
+    id: '3',
+    name: 'High-Waisted Wide Leg Trousers',
+    price: 399,
+    category: 'Pants',
+    images: [
+      'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    description: 'Tailored wide-leg trousers designed for a flattering fit. Made from premium wool blend.',
+    reviews: [],
+    isNew: true,
+  },
+  {
+    id: '4',
+    name: 'Oversized Wool Blazer',
+    price: 799,
+    category: 'Coats',
+    images: [
+      'https://images.unsplash.com/photo-1548624149-f3ca14795244?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['S', 'M', 'L'],
+    description: 'Structured wool blazer with an oversized silhouette. Ideal for layering.',
+    reviews: [],
+  },
+  {
+    id: '5',
+    name: 'Ribbed Knit Sweater',
+    price: 299,
+    category: 'Tops',
+    images: [
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'Cozy ribbed knit sweater with a mock neck. Soft and warm for colder days.',
+    reviews: [],
+    isBestSeller: true,
+  },
+  {
+    id: '6',
+    name: 'Pleated Midi Skirt',
+    price: 349,
+    category: 'Bottoms',
+    images: [
+      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    description: 'Flowy pleated midi skirt in a metallic finish. Adds a touch of glamour to any outfit.',
+    reviews: [],
+  },
+  {
+    id: '7',
+    name: 'Cotton Poplin Shirt',
+    price: 249,
+    category: 'Tops',
+    images: [
+      'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Crisp white cotton poplin shirt. A wardrobe staple for a polished look.',
+    reviews: [],
+    isNew: true,
+  },
+  {
+    id: '8',
+    name: 'Leather Ankle Boots',
+    price: 899,
+    category: 'Shoes',
+    images: [
+      'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=1000',
+    ],
+    sizes: ['36', '37', '38', '39', '40'],
+    description: 'Sleek leather ankle boots with a block heel. Comfortable and stylish.',
+    reviews: [],
+  },
+];
