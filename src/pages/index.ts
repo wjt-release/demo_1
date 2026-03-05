@@ -13,4 +13,6 @@ export { Contact } from './Contact';
 export { Favorites } from './Favorites';
 export { Coupons, FlashSale } from './ComingSoon';
 export { Live } from './Live';
+export { Delivery } from './Delivery';
+export { DeliveryMerchant } from './DeliveryMerchant';
 export { NotFound } from './NotFound';

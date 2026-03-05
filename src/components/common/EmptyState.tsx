@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Heart, Ticket, Clock, Video } from 'lucide-react';
+import { Package, Heart, Ticket, Clock, Video, Truck } from 'lucide-react';
 
 interface EmptyStateProps {
   icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
-  type?: 'cart' | 'orders' | 'favorites' | 'coupons' | 'flash-sale' | 'live' | 'default';
+  type?: 'cart' | 'orders' | 'favorites' | 'coupons' | 'flash-sale' | 'live' | 'delivery' | 'default';
 }
 
 const iconMap = {
@@ -17,6 +17,7 @@ const iconMap = {
   coupons: <Ticket className="w-16 h-16" />,
   'flash-sale': <Clock className="w-16 h-16" />,
   live: <Video className="w-16 h-16" />,
+  delivery: <Truck className="w-16 h-16" />,
   default: <Package className="w-16 h-16" />,
 };
 

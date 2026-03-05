@@ -53,6 +53,8 @@ flowchart TB
 | `/contact` | 联系客服 | 邮件表单 |
 | `/favorites` | 收藏夹 | 收藏商品列表 |
 | `/live` | 直播购物 | 直播视频、互动、商品购买 |
+| `/delivery` | 快递服务 | 快递商家列表 |
+| `/delivery/:id` | 快递商家详情 | 商家商品选购 |
 | `*` | 404页面 | 页面不存在 |
 
 ## 4. 数据模型
@@ -74,6 +76,9 @@ erDiagram
     LiveStream ||--o{ LiveProduct : features
     LiveProduct }o--|| Product : references
     LiveStream ||--o{ LiveComment : has
+    DeliveryMerchant ||--o{ DeliveryProduct : sells
+    DeliveryProduct }o--|| Product : references
+    DeliveryMerchant ||--o{ DeliveryReview : has
 
     User {
         string id PK
@@ -189,6 +194,39 @@ erDiagram
         string content
         datetime created_at
     }
+    
+    DeliveryMerchant {
+        string id PK
+        string name
+        string logo
+        string cover_image
+        string description
+        float rating
+        int review_count
+        int delivery_time_min
+        int delivery_time_max
+        float min_order_amount
+        float delivery_fee
+        string[] delivery_areas
+    }
+    
+    DeliveryProduct {
+        string id PK
+        string merchant_id FK
+        string product_id FK
+        float price
+        string category
+        int display_order
+    }
+    
+    DeliveryReview {
+        string id PK
+        string merchant_id FK
+        string user_name
+        int rating
+        string content
+        datetime created_at
+    }
 ```
 
 ### 4.2 TypeScript 类型定义
@@ -299,6 +337,40 @@ interface LiveComment {
   content: string;
   createdAt: Date;
 }
+
+interface DeliveryMerchant {
+  id: string;
+  name: string;
+  logo: string;
+  coverImage: string;
+  description: string;
+  rating: number;
+  reviewCount: number;
+  deliveryTimeMin: number;
+  deliveryTimeMax: number;
+  minOrderAmount: number;
+  deliveryFee: number;
+  deliveryAreas: string[];
+  tags: string[];
+}
+
+interface DeliveryProduct {
+  id: string;
+  merchantId: string;
+  product: Product;
+  price: number;
+  category: string;
+  displayOrder: number;
+}
+
+interface DeliveryReview {
+  id: string;
+  merchantId: string;
+  userName: string;
+  rating: number;
+  content: string;
+  createdAt: Date;
+}
 ```
 
 ## 5. 状态管理设计
@@ -354,6 +426,21 @@ interface LiveStore {
   addComment: (comment: LiveComment) => void;
   setViewerCount: (count: number) => void;
 }
+
+interface DeliveryStore {
+  merchants: DeliveryMerchant[];
+  currentMerchant: DeliveryMerchant | null;
+  merchantProducts: DeliveryProduct[];
+  filters: {
+    rating: number | null;
+    deliveryTime: number | null;
+    priceRange: [number, number] | null;
+  };
+  setMerchants: (merchants: DeliveryMerchant[]) => void;
+  setCurrentMerchant: (merchant: DeliveryMerchant | null) => void;
+  setMerchantProducts: (products: DeliveryProduct[]) => void;
+  setFilters: (filters: Partial<DeliveryStore['filters']>) => void;
+}
 ```
 
 ## 6. 项目目录结构
@@ -386,11 +473,15 @@ src/
 │   │   ├── NewArrivals.tsx
 │   │   ├── HotProducts.tsx
 │   │   └── WelcomeModal.tsx
-│   └── live/
-│       ├── LiveVideo.tsx
-│       ├── LiveComments.tsx
-│       ├── LiveProducts.tsx
-│       └── LiveInteraction.tsx
+│   ├── live/
+│   │   ├── LiveVideo.tsx
+│   │   ├── LiveComments.tsx
+│   │   ├── LiveProducts.tsx
+│   │   └── LiveInteraction.tsx
+│   └── delivery/
+│       ├── MerchantCard.tsx
+│       ├── MerchantFilter.tsx
+│       └── MerchantProductGrid.tsx
 ├── pages/
 │   ├── Home.tsx
 │   ├── Login.tsx
@@ -406,6 +497,8 @@ src/
 │   ├── Contact.tsx
 │   ├── Favorites.tsx
 │   ├── Live.tsx
+│   ├── Delivery.tsx
+│   ├── DeliveryMerchant.tsx
 │   └── NotFound.tsx
 ├── hooks/
 │   ├── useAuth.ts
@@ -418,12 +511,14 @@ src/
 │   ├── orderStore.ts
 │   ├── addressStore.ts
 │   ├── favoritesStore.ts
-│   └── liveStore.ts
+│   ├── liveStore.ts
+│   └── deliveryStore.ts
 ├── data/
 │   ├── products.ts
 │   ├── categories.ts
 │   ├── reviews.ts
-│   └── liveStreams.ts
+│   ├── liveStreams.ts
+│   └── deliveryMerchants.ts
 ├── utils/
 │   ├── format.ts
 │   └── validation.ts
@@ -444,3 +539,4 @@ src/
 - 购物车数据：存储在 LocalStorage
 - 订单数据：存储在 LocalStorage
 - 直播数据：预定义直播信息、直播商品、模拟弹幕
+- 快递商家数据：预定义 5-8 个快递商家，包含商家信息、配送范围、专属商品

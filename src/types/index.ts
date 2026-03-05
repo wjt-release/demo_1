@@ -121,3 +121,37 @@ export interface LiveComment {
   content: string;
   createdAt: Date;
 }
+
+export interface DeliveryMerchant {
+  id: string;
+  name: string;
+  logo: string;
+  coverImage: string;
+  description: string;
+  rating: number;
+  reviewCount: number;
+  deliveryTimeMin: number;
+  deliveryTimeMax: number;
+  minOrderAmount: number;
+  deliveryFee: number;
+  deliveryAreas: string[];
+  tags: string[];
+}
+
+export interface DeliveryProduct {
+  id: string;
+  merchantId: string;
+  product: Product;
+  price: number;
+  category: string;
+  displayOrder: number;
+}
+
+export interface DeliveryReview {
+  id: string;
+  merchantId: string;
+  userName: string;
+  rating: number;
+  content: string;
+  createdAt: Date;
+}

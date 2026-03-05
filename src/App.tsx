@@ -16,6 +16,8 @@ import {
   Coupons,
   FlashSale,
   Live,
+  Delivery,
+  DeliveryMerchant,
   NotFound,
 } from '@/pages';
 
@@ -39,6 +41,8 @@ export default function App() {
         <Route path="/coupons" element={<Coupons />} />
         <Route path="/flash-sale" element={<FlashSale />} />
         <Route path="/live" element={<Live />} />
+        <Route path="/delivery" element={<Delivery />} />
+        <Route path="/delivery/:id" element={<DeliveryMerchant />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
