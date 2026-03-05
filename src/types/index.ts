@@ -93,3 +93,31 @@ export interface HeroSlide {
   image: string;
   link?: string;
 }
+
+export interface LiveStream {
+  id: string;
+  title: string;
+  coverImage: string;
+  streamerName: string;
+  streamerAvatar: string;
+  viewerCount: number;
+  isLive: boolean;
+  startedAt: Date;
+}
+
+export interface LiveProduct {
+  id: string;
+  streamId: string;
+  product: Product;
+  discountPrice: number;
+  discountEndTime: number;
+  displayOrder: number;
+}
+
+export interface LiveComment {
+  id: string;
+  streamId: string;
+  userName: string;
+  content: string;
+  createdAt: Date;
+}

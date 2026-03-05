@@ -51,6 +51,8 @@ flowchart TB
 | `/orders/:id` | 订单详情 | 单个订单详情 |
 | `/account` | 个人中心 | 账户信息 |
 | `/contact` | 联系客服 | 邮件表单 |
+| `/favorites` | 收藏夹 | 收藏商品列表 |
+| `/live` | 直播购物 | 直播视频、互动、商品购买 |
 | `*` | 404页面 | 页面不存在 |
 
 ## 4. 数据模型
@@ -69,6 +71,9 @@ erDiagram
     Review }o--|| User : written_by
     Cart ||--o{ CartItem : contains
     CartItem }o--|| Product : references
+    LiveStream ||--o{ LiveProduct : features
+    LiveProduct }o--|| Product : references
+    LiveStream ||--o{ LiveComment : has
 
     User {
         string id PK
@@ -157,6 +162,33 @@ erDiagram
         string size
         int quantity
     }
+    
+    LiveStream {
+        string id PK
+        string title
+        string cover_image
+        string streamer_name
+        int viewer_count
+        boolean is_live
+        datetime started_at
+    }
+    
+    LiveProduct {
+        string id PK
+        string stream_id FK
+        string product_id FK
+        float discount_price
+        int discount_end_time
+        int display_order
+    }
+    
+    LiveComment {
+        string id PK
+        string stream_id FK
+        string user_name
+        string content
+        datetime created_at
+    }
 ```
 
 ### 4.2 TypeScript 类型定义
@@ -240,6 +272,33 @@ interface CartItem {
   size: string;
   quantity: number;
 }
+
+interface LiveStream {
+  id: string;
+  title: string;
+  coverImage: string;
+  streamerName: string;
+  viewerCount: number;
+  isLive: boolean;
+  startedAt: Date;
+}
+
+interface LiveProduct {
+  id: string;
+  streamId: string;
+  product: Product;
+  discountPrice: number;
+  discountEndTime: number;
+  displayOrder: number;
+}
+
+interface LiveComment {
+  id: string;
+  streamId: string;
+  userName: string;
+  content: string;
+  createdAt: Date;
+}
 ```
 
 ## 5. 状态管理设计
@@ -277,6 +336,24 @@ interface AddressStore {
   deleteAddress: (id: string) => void;
   setDefault: (id: string) => void;
 }
+
+interface FavoritesStore {
+  items: Product[];
+  addFavorite: (product: Product) => void;
+  removeFavorite: (productId: string) => void;
+  toggleFavorite: (product: Product) => void;
+  isFavorite: (productId: string) => boolean;
+  clearFavorites: () => void;
+}
+
+interface LiveStore {
+  currentStream: LiveStream | null;
+  liveProducts: LiveProduct[];
+  comments: LiveComment[];
+  viewerCount: number;
+  addComment: (comment: LiveComment) => void;
+  setViewerCount: (count: number) => void;
+}
 ```
 
 ## 6. 项目目录结构
@@ -304,11 +381,16 @@ src/
 │   ├── cart/
 │   │   ├── CartItem.tsx
 │   │   └── CartSummary.tsx
-│   └── home/
-│       ├── HeroCarousel.tsx
-│       ├── NewArrivals.tsx
-│       ├── HotProducts.tsx
-│       └── WelcomeModal.tsx
+│   ├── home/
+│   │   ├── HeroCarousel.tsx
+│   │   ├── NewArrivals.tsx
+│   │   ├── HotProducts.tsx
+│   │   └── WelcomeModal.tsx
+│   └── live/
+│       ├── LiveVideo.tsx
+│       ├── LiveComments.tsx
+│       ├── LiveProducts.tsx
+│       └── LiveInteraction.tsx
 ├── pages/
 │   ├── Home.tsx
 │   ├── Login.tsx
@@ -322,6 +404,8 @@ src/
 │   ├── OrderDetail.tsx
 │   ├── Account.tsx
 │   ├── Contact.tsx
+│   ├── Favorites.tsx
+│   ├── Live.tsx
 │   └── NotFound.tsx
 ├── hooks/
 │   ├── useAuth.ts
@@ -332,11 +416,14 @@ src/
 │   ├── authStore.ts
 │   ├── cartStore.ts
 │   ├── orderStore.ts
-│   └── addressStore.ts
+│   ├── addressStore.ts
+│   ├── favoritesStore.ts
+│   └── liveStore.ts
 ├── data/
 │   ├── products.ts
 │   ├── categories.ts
-│   └── reviews.ts
+│   ├── reviews.ts
+│   └── liveStreams.ts
 ├── utils/
 │   ├── format.ts
 │   └── validation.ts
@@ -356,3 +443,4 @@ src/
 - 用户数据：存储在 LocalStorage
 - 购物车数据：存储在 LocalStorage
 - 订单数据：存储在 LocalStorage
+- 直播数据：预定义直播信息、直播商品、模拟弹幕
