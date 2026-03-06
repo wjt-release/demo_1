@@ -155,3 +155,59 @@ export interface DeliveryReview {
   content: string;
   createdAt: Date;
 }
+
+export interface Post {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  title: string;
+  content: string;
+  postType: 'image' | 'video' | 'mixed';
+  media: PostMedia[];
+  videoUrl?: string;
+  tags: string[];
+  products: Product[];
+  likesCount: number;
+  favoritesCount: number;
+  commentsCount: number;
+  isLiked?: boolean;
+  isFavorited?: boolean;
+  createdAt: Date;
+}
+
+export interface PostMedia {
+  id: string;
+  postId: string;
+  url: string;
+  mediaType: 'image' | 'video';
+  displayOrder: number;
+}
+
+export interface Comment {
+  id: string;
+  postId: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  parentId?: string;
+  content: string;
+  likesCount: number;
+  isLiked?: boolean;
+  replies?: Comment[];
+  createdAt: Date;
+}
+
+export interface PostFilters {
+  tag: string | null;
+  postType: 'all' | 'image' | 'video';
+  sortBy: 'latest' | 'popular';
+}
+
+export interface VideoParseResult {
+  success: boolean;
+  videoUrl?: string;
+  thumbnail?: string;
+  title?: string;
+  error?: string;
+}

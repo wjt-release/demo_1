@@ -15,4 +15,7 @@ export { Coupons, FlashSale } from './ComingSoon';
 export { Live } from './Live';
 export { Delivery } from './Delivery';
 export { DeliveryMerchant } from './DeliveryMerchant';
+export { Community } from './Community';
+export { CreatePost } from './CreatePost';
+export { PostDetail } from './PostDetail';
 export { NotFound } from './NotFound';

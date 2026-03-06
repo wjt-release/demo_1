@@ -18,6 +18,9 @@ import {
   Live,
   Delivery,
   DeliveryMerchant,
+  Community,
+  CreatePost,
+  PostDetail,
   NotFound,
 } from '@/pages';
 
@@ -43,6 +46,9 @@ export default function App() {
         <Route path="/live" element={<Live />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/delivery/:id" element={<DeliveryMerchant />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/community/create" element={<CreatePost />} />
+        <Route path="/community/:id" element={<PostDetail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

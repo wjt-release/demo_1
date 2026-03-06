@@ -33,7 +33,7 @@ flowchart TB
 - **动画库**：Framer Motion
 - **图标库**：Lucide React（线性图标风格统一）
 - **后端服务**：无（纯前端 Mock 数据）
-- **数据存储**：LocalStorage（用户数据、购物车、订单）
+- **数据存储**：LocalStorage（用户数据、购物车、订单、帖子）
 
 ## 3. 路由定义
 
@@ -55,6 +55,9 @@ flowchart TB
 | `/live` | 直播购物 | 直播视频、互动、商品购买 |
 | `/delivery` | 快递服务 | 快递商家列表 |
 | `/delivery/:id` | 快递商家详情 | 商家商品选购 |
+| `/community` | 社区帖子 | 帖子列表、瀑布流 |
+| `/community/create` | 发布帖子 | 上传图片/视频、视频解析 |
+| `/community/:id` | 帖子详情 | 内容展示、评论互动 |
 | `*` | 404页面 | 页面不存在 |
 
 ## 4. 数据模型
@@ -65,6 +68,10 @@ flowchart TB
 erDiagram
     User ||--o{ Order : places
     User ||--o{ Address : has
+    User ||--o{ Post : creates
+    User ||--o{ PostLike : likes
+    User ||--o{ PostFavorite : favorites
+    User ||--o{ Comment : writes
     Order ||--|{ OrderItem : contains
     OrderItem }o--|| Product : references
     Product }o--|| Category : belongs_to
@@ -79,12 +86,21 @@ erDiagram
     DeliveryMerchant ||--o{ DeliveryProduct : sells
     DeliveryProduct }o--|| Product : references
     DeliveryMerchant ||--o{ DeliveryReview : has
+    Post ||--o{ PostMedia : has
+    Post ||--o{ PostLike : receives
+    Post ||--o{ PostFavorite : receives
+    Post ||--o{ Comment : has
+    Post ||--o{ PostTag : has
+    Post ||--o{ PostProduct : links
+    PostProduct }o--|| Product : references
+    Comment ||--o{ CommentLike : receives
 
     User {
         string id PK
         string email
         string password
         string name
+        string avatar
         string phone
         datetime created_at
     }
@@ -102,129 +118,67 @@ erDiagram
         datetime created_at
     }
     
-    ProductImage {
-        string id PK
-        string product_id FK
-        string url
-        int order
-    }
-    
-    Category {
-        string id PK
-        string name
-        string slug
-    }
-    
-    Order {
+    Post {
         string id PK
         string user_id FK
-        string address_id FK
-        float total
-        string status
-        datetime created_at
-    }
-    
-    OrderItem {
-        string id PK
-        string order_id FK
-        string product_id FK
-        string size
-        int quantity
-        float price
-    }
-    
-    Address {
-        string id PK
-        string user_id FK
-        string name
-        string phone
-        string province
-        string city
-        string district
-        string detail
-        boolean is_default
-    }
-    
-    Review {
-        string id PK
-        string product_id FK
-        string user_id FK
-        int rating
-        string content
-        datetime created_at
-    }
-    
-    Cart {
-        string id PK
-        string user_id FK
-        datetime updated_at
-    }
-    
-    CartItem {
-        string id PK
-        string cart_id FK
-        string product_id FK
-        string size
-        int quantity
-    }
-    
-    LiveStream {
-        string id PK
         string title
-        string cover_image
-        string streamer_name
-        int viewer_count
-        boolean is_live
-        datetime started_at
-    }
-    
-    LiveProduct {
-        string id PK
-        string stream_id FK
-        string product_id FK
-        float discount_price
-        int discount_end_time
-        int display_order
-    }
-    
-    LiveComment {
-        string id PK
-        string stream_id FK
-        string user_name
         string content
+        string post_type
+        string video_url
+        int likes_count
+        int favorites_count
+        int comments_count
         datetime created_at
     }
     
-    DeliveryMerchant {
+    PostMedia {
         string id PK
-        string name
-        string logo
-        string cover_image
-        string description
-        float rating
-        int review_count
-        int delivery_time_min
-        int delivery_time_max
-        float min_order_amount
-        float delivery_fee
-        string[] delivery_areas
-    }
-    
-    DeliveryProduct {
-        string id PK
-        string merchant_id FK
-        string product_id FK
-        float price
-        string category
+        string post_id FK
+        string url
+        string media_type
         int display_order
     }
     
-    DeliveryReview {
+    PostTag {
         string id PK
-        string merchant_id FK
-        string user_name
-        int rating
+        string post_id FK
+        string tag_name
+    }
+    
+    PostProduct {
+        string id PK
+        string post_id FK
+        string product_id FK
+    }
+    
+    PostLike {
+        string id PK
+        string post_id FK
+        string user_id FK
+        datetime created_at
+    }
+    
+    PostFavorite {
+        string id PK
+        string post_id FK
+        string user_id FK
+        datetime created_at
+    }
+    
+    Comment {
+        string id PK
+        string post_id FK
+        string user_id FK
+        string parent_id FK
         string content
+        int likes_count
+        datetime created_at
+    }
+    
+    CommentLike {
+        string id PK
+        string comment_id FK
+        string user_id FK
         datetime created_at
     }
 ```
@@ -237,6 +191,7 @@ interface User {
   email: string;
   password: string;
   name: string;
+  avatar?: string;
   phone?: string;
   createdAt: Date;
 }
@@ -257,119 +212,60 @@ interface Product {
   createdAt: Date;
 }
 
-interface Category {
+interface Post {
   id: string;
-  name: string;
-  slug: string;
-}
-
-interface Order {
-  id: string;
-  userId: string;
-  address: Address;
-  items: OrderItem[];
-  total: number;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: Date;
-}
-
-interface OrderItem {
-  productId: string;
-  product: Product;
-  size: string;
-  quantity: number;
-  price: number;
-}
-
-interface Address {
-  id: string;
-  userId: string;
-  name: string;
-  phone: string;
-  province: string;
-  city: string;
-  district: string;
-  detail: string;
-  isDefault: boolean;
-}
-
-interface Review {
-  id: string;
-  productId: string;
   userId: string;
   userName: string;
-  rating: number;
-  content: string;
-  images?: string[];
-  createdAt: Date;
-}
-
-interface CartItem {
-  productId: string;
-  product: Product;
-  size: string;
-  quantity: number;
-}
-
-interface LiveStream {
-  id: string;
+  userAvatar?: string;
   title: string;
-  coverImage: string;
-  streamerName: string;
-  viewerCount: number;
-  isLive: boolean;
-  startedAt: Date;
-}
-
-interface LiveProduct {
-  id: string;
-  streamId: string;
-  product: Product;
-  discountPrice: number;
-  discountEndTime: number;
-  displayOrder: number;
-}
-
-interface LiveComment {
-  id: string;
-  streamId: string;
-  userName: string;
   content: string;
-  createdAt: Date;
-}
-
-interface DeliveryMerchant {
-  id: string;
-  name: string;
-  logo: string;
-  coverImage: string;
-  description: string;
-  rating: number;
-  reviewCount: number;
-  deliveryTimeMin: number;
-  deliveryTimeMax: number;
-  minOrderAmount: number;
-  deliveryFee: number;
-  deliveryAreas: string[];
+  postType: 'image' | 'video' | 'mixed';
+  media: PostMedia[];
+  videoUrl?: string;
   tags: string[];
+  products: Product[];
+  likesCount: number;
+  favoritesCount: number;
+  commentsCount: number;
+  isLiked?: boolean;
+  isFavorited?: boolean;
+  createdAt: Date;
 }
 
-interface DeliveryProduct {
+interface PostMedia {
   id: string;
-  merchantId: string;
-  product: Product;
-  price: number;
-  category: string;
+  postId: string;
+  url: string;
+  mediaType: 'image' | 'video';
   displayOrder: number;
 }
 
-interface DeliveryReview {
+interface Comment {
   id: string;
-  merchantId: string;
+  postId: string;
+  userId: string;
   userName: string;
-  rating: number;
+  userAvatar?: string;
+  parentId?: string;
   content: string;
+  likesCount: number;
+  isLiked?: boolean;
+  replies?: Comment[];
   createdAt: Date;
+}
+
+interface PostFilters {
+  tag: string | null;
+  postType: 'all' | 'image' | 'video';
+  sortBy: 'latest' | 'popular';
+}
+
+interface VideoParseResult {
+  success: boolean;
+  videoUrl?: string;
+  thumbnail?: string;
+  title?: string;
+  error?: string;
 }
 ```
 
@@ -431,15 +327,25 @@ interface DeliveryStore {
   merchants: DeliveryMerchant[];
   currentMerchant: DeliveryMerchant | null;
   merchantProducts: DeliveryProduct[];
-  filters: {
-    rating: number | null;
-    deliveryTime: number | null;
-    priceRange: [number, number] | null;
-  };
+  filters: DeliveryFilters;
   setMerchants: (merchants: DeliveryMerchant[]) => void;
   setCurrentMerchant: (merchant: DeliveryMerchant | null) => void;
   setMerchantProducts: (products: DeliveryProduct[]) => void;
-  setFilters: (filters: Partial<DeliveryStore['filters']>) => void;
+  setFilters: (filters: Partial<DeliveryFilters>) => void;
+}
+
+interface CommunityStore {
+  posts: Post[];
+  currentPost: Post | null;
+  filters: PostFilters;
+  setPosts: (posts: Post[]) => void;
+  addPost: (post: Post) => void;
+  setCurrentPost: (post: Post | null) => void;
+  likePost: (postId: string) => void;
+  unlikePost: (postId: string) => void;
+  favoritePost: (postId: string) => void;
+  unfavoritePost: (postId: string) => void;
+  setFilters: (filters: Partial<PostFilters>) => void;
 }
 ```
 
@@ -478,10 +384,18 @@ src/
 │   │   ├── LiveComments.tsx
 │   │   ├── LiveProducts.tsx
 │   │   └── LiveInteraction.tsx
-│   └── delivery/
-│       ├── MerchantCard.tsx
-│       ├── MerchantFilter.tsx
-│       └── MerchantProductGrid.tsx
+│   ├── delivery/
+│   │   ├── MerchantCard.tsx
+│   │   ├── MerchantFilter.tsx
+│   │   └── MerchantProductGrid.tsx
+│   └── community/
+│       ├── PostCard.tsx
+│       ├── PostGrid.tsx
+│       ├── PostMedia.tsx
+│       ├── PostComments.tsx
+│       ├── MediaUploader.tsx
+│       ├── VideoParser.tsx
+│       └── TagSelector.tsx
 ├── pages/
 │   ├── Home.tsx
 │   ├── Login.tsx
@@ -499,6 +413,9 @@ src/
 │   ├── Live.tsx
 │   ├── Delivery.tsx
 │   ├── DeliveryMerchant.tsx
+│   ├── Community.tsx
+│   ├── CreatePost.tsx
+│   ├── PostDetail.tsx
 │   └── NotFound.tsx
 ├── hooks/
 │   ├── useAuth.ts
@@ -512,16 +429,19 @@ src/
 │   ├── addressStore.ts
 │   ├── favoritesStore.ts
 │   ├── liveStore.ts
-│   └── deliveryStore.ts
+│   ├── deliveryStore.ts
+│   └── communityStore.ts
 ├── data/
 │   ├── products.ts
 │   ├── categories.ts
 │   ├── reviews.ts
 │   ├── liveStreams.ts
-│   └── deliveryMerchants.ts
+│   ├── deliveryMerchants.ts
+│   └── posts.ts
 ├── utils/
 │   ├── format.ts
-│   └── validation.ts
+│   ├── validation.ts
+│   └── videoParser.ts
 ├── styles/
 │   └── globals.css
 ├── types/
@@ -540,3 +460,5 @@ src/
 - 订单数据：存储在 LocalStorage
 - 直播数据：预定义直播信息、直播商品、模拟弹幕
 - 快递商家数据：预定义 5-8 个快递商家，包含商家信息、配送范围、专属商品
+- 社区帖子数据：预定义 10-15 条帖子，包含图片/视频、标签、评论
+- 帖子互动数据：存储在 LocalStorage（点赞、收藏）
